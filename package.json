@@ -1,14 +1,29 @@
-
-  {
-  "name": "auto-repo",
+{
+  "name": "@captain-job/auto-repo",
   "version": "1.0.0",
-  "description": "CLI tool to automate GitHub repo setup and commits",
-  "bin": {
-    "auto-repo": "./scripts/auto-repo.js"
-  },
+  "description": "Automate GitHub repo creation and pushing with one command",
   "type": "module",
-  "keywords": ["cli", "git", "automation", "repo"],
+  "bin": {
+    "auto-repo": "scripts/auto-repo.js"
+  },
+  "keywords": [
+    "cli",
+    "git",
+    "github",
+    "automation"
+  ],
   "author": "Job Kiptoo",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/job-kiptoo-dev/auto-repo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/job-kiptoo-dev/auto-repo/issues"
+  },
+  "homepage": "https://github.com/job-kiptoo-dev/auto-repo#readme"
 }
-
