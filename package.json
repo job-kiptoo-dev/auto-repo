@@ -1,0 +1,14 @@
+
+  {
+  "name": "auto-repo",
+  "version": "1.0.0",
+  "description": "CLI tool to automate GitHub repo setup and commits",
+  "bin": {
+    "auto-repo": "./scripts/auto-repo.js"
+  },
+  "type": "module",
+  "keywords": ["cli", "git", "automation", "repo"],
+  "author": "Job Kiptoo",
+  "license": "MIT"
+}
+
