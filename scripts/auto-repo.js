@@ -91,7 +91,7 @@ function run(cmd, options = {}) {
     return result;
   } catch (err) {
     if (!options.silent) {
-      console.error(`❌ Failed: ${cmd}`);
+      console.error(`Failed: ${cmd}`);
       if (err.message) console.error(`   Error: ${err.message}`);
     }
     if (!options.continueOnError) {
@@ -171,7 +171,6 @@ async function getGithubUsername(token) {
     return process.env.GITHUB_USER;
   }
 
-  // Try to get username from GitHub API
   try {
     console.log("👤 Fetching username from GitHub API...");
     const userInfo = execSync(
@@ -187,7 +186,6 @@ async function getGithubUsername(token) {
     console.log("⚠️ Could not fetch username from API");
   }
 
-  // Fallback to interactive prompt
   const username = await ask("Enter your GitHub username: ");
   if (!username) {
     console.error("❌ GitHub username is required");
@@ -278,13 +276,11 @@ function setupGitRepo() {
     console.log("   Git repository already exists");
   }
 
-  // Check if there are any changes to commit
   const status = run("git status --porcelain", { silent: true });
   if (status && status.trim()) {
     console.log("   Adding and committing changes...");
     run("git add .");
 
-    // Check if there are any commits yet
     const hasCommits = run("git log --oneline -1", {
       silent: true,
       continueOnError: true,
@@ -299,7 +295,6 @@ function setupGitRepo() {
     console.log("   No changes to commit");
   }
 
-  // Ensure we're on main branch
   run("git branch -M main");
 }
 
@@ -309,12 +304,10 @@ function setupRemoteOrigin(username, repoName) {
   const remoteUrl = `git@github.com:${username}/${repoName}.git`;
 
   try {
-    // Try to add remote
     run(`git remote add origin ${remoteUrl}`, { silent: true });
     console.log("   Remote origin added");
   } catch {
     try {
-      // If it fails, try to set the URL (remote might already exist)
       run(`git remote set-url origin ${remoteUrl}`, { silent: true });
       console.log("   Remote origin updated");
     } catch {
@@ -327,13 +320,11 @@ function setupRemoteOrigin(username, repoName) {
 function setupSSH() {
   console.log("🔐 Setting up SSH configuration...");
 
-  // Ensure .ssh directory exists
   const sshDir = path.join(process.env.HOME, ".ssh");
   if (!fs.existsSync(sshDir)) {
     fs.mkdirSync(sshDir, { mode: 0o700 });
   }
 
-  // Add GitHub to known hosts if not already there
   const knownHostsFile = path.join(sshDir, "known_hosts");
   let knownHosts = "";
 
@@ -353,14 +344,12 @@ async function pushToGithub() {
   console.log("🚀 Pushing to GitHub...");
 
   try {
-    // Test SSH connection first
     console.log("   Testing SSH connection...");
     const sshTest = run("ssh -T git@github.com", {
       silent: true,
       continueOnError: true,
     });
 
-    // Push to GitHub
     run("git push -u origin main");
     console.log("✅ Successfully pushed to GitHub");
     return true;
@@ -375,16 +364,13 @@ async function pushToGithub() {
   }
 }
 
-// Main execution
 (async () => {
   try {
     console.log("🚀 Auto-Repo: Automated GitHub Repository Creator\n");
 
-    // Get repository name (current directory name)
     const REPO_NAME = path.basename(process.cwd());
     console.log(`📁 Repository name: ${REPO_NAME}`);
 
-    // Get description
     let DESCRIPTION = descriptionArg;
     if (!DESCRIPTION) {
       DESCRIPTION = await ask(
@@ -396,10 +382,8 @@ async function pushToGithub() {
     }
     console.log(`📝 Description: ${DESCRIPTION}`);
 
-    // Get GitHub token
     const TOKEN = await getGithubToken();
 
-    // Validate token
     const isValidToken = await validateToken(TOKEN);
     if (!isValidToken) {
       console.error(
@@ -409,10 +393,8 @@ async function pushToGithub() {
       process.exit(1);
     }
 
-    // Get GitHub username
     const GITHUB_USER = await getGithubUsername(TOKEN);
 
-    // Create GitHub repository
     const repoCreated = await createGithubRepo(
       TOKEN,
       GITHUB_USER,
@@ -426,16 +408,12 @@ async function pushToGithub() {
       process.exit(1);
     }
 
-    // Setup local git repository
     setupGitRepo();
 
-    // Setup remote origin
     setupRemoteOrigin(GITHUB_USER, REPO_NAME);
 
-    // Setup SSH
     setupSSH();
 
-    // Push to GitHub (unless --no-push flag is used)
     if (options.push !== false) {
       const pushSuccess = await pushToGithub();
       if (!pushSuccess) {
@@ -445,7 +423,6 @@ async function pushToGithub() {
       console.log("⏭️ Skipping push (--no-push flag used)");
     }
 
-    // Success message
     console.log("\n" + "=".repeat(50));
     console.log("🎉 Repository setup completed!");
     console.log(`📍 Local: ${process.cwd()}`);
